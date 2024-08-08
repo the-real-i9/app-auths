@@ -7,7 +7,8 @@ import (
 )
 
 func Signup(router fiber.Router) {
-	router.Post("/submit_email", signupHandlers.SubmitEmail)
-	router.Post("/verify_email", signupHandlers.VerifyEmail)
-	router.Post("/register_user", signupHandlers.RegisterUser)
+	// a cookie restricted to this path is used to maintain a session throughout the signup process
+	router.Post("/submit_email", signupHandlers.SubmitEmail)   // issue cookie associated with the next state info
+	router.Post("/verify_email", signupHandlers.VerifyEmail)   // verify cookie and state, update cookie for next state
+	router.Post("/register_user", signupHandlers.RegisterUser) // verify cookie and state, destroy cookie
 }

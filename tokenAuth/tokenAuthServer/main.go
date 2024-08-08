@@ -34,21 +34,21 @@ func init() {
 func main() {
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 
-	// signup (verify email) : OTP
+	// signup | verify email : session auth | Email OTP auth
 	app.Route("/api/auth/signup", routes.Signup)
 
-	// change your password : OTP
+	// password reset : session auth | Email OTP
 
-	// login
+	// login : issue jwt token
 	app.Post("/api/auth/login", handlers.Login)
 
 	app.Use(jwtware.New(jwtware.Config{
 		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("AUTH_JWT_SECRET"))},
 	}))
 
-	// access a restricted resource : jwt authentication
+	// access a restricted resource : jwt auth
 
-	// make payment : live token
+	// perform an critically restricted operation : jwt auth, authenticator OTP
 
 	app.Listen(":5000")
 }

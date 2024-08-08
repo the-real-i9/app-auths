@@ -43,6 +43,7 @@ func SubmitEmail(c *fiber.Ctx) error {
 	session.Set("email", body.Email)
 	session.Set("verificationToken", verfToken)
 	session.Set("verificationTokenExpires", verfTokenExpires)
+	session.Set("signupState", "verify email")
 
 	if save_err := session.Save(); save_err != nil {
 		panic(save_err)
@@ -54,17 +55,21 @@ func SubmitEmail(c *fiber.Ctx) error {
 }
 
 func VerifyEmail(c *fiber.Ctx) error {
+	session, err := globalVars.SignupSessionStore.Get(c)
+	if err != nil {
+		panic(err)
+	}
+
+	if session.Get("signupState").(string) != "verify email" {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
 	var body struct {
 		InputVerfToken int `json:"verification_code"`
 	}
 
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString("invalid payload")
-	}
-
-	session, err := globalVars.SignupSessionStore.Get(c)
-	if err != nil {
-		panic(err)
 	}
 
 	email := session.Get("email").(string)
@@ -79,10 +84,22 @@ func VerifyEmail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString("Verification code expired")
 	}
 
+	session.Delete("verificationToken")
+	session.Delete("verificationTokenExpires")
+	session.Set("signupState", "register user")
+
 	return c.SendString("Your email " + email + " has been verified!")
 }
 
 func RegisterUser(c *fiber.Ctx) error {
+	session, err := globalVars.SignupSessionStore.Get(c)
+	if err != nil {
+		panic(err)
+	}
+
+	if session.Get("signupState").(string) != "register user" {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 
 	var body struct {
 		Username string `json:"username"`
@@ -102,11 +119,6 @@ func RegisterUser(c *fiber.Ctx) error {
 
 	if *userExists {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString("username already taken")
-	}
-
-	session, err := globalVars.SignupSessionStore.Get(c)
-	if err != nil {
-		panic(err)
 	}
 
 	email := session.Get("email").(string)
