@@ -37,7 +37,7 @@ func main() {
 	// signup | verify email : session auth | Email OTP auth
 	app.Route("/api/auth/signup", routes.Signup)
 
-	// password reset : session auth | Email OTP
+	// password reset : session auth | OTP generator server
 
 	// login : issue jwt token
 	app.Post("/api/auth/login", handlers.Login)
