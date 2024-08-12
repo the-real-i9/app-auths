@@ -22,12 +22,12 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	type User struct {
-		Id       int    `db:"uid" json:"id"`
+		Id       int    `db:"user_id" json:"id"`
 		Email    string `json:"email"`
 		Username string `json:"username"`
 	}
 
-	user, err := helpers.QueryRowType[User]("SELECT uid, email, username FROM tokenauth.i9ca_user WHERE username = $1 AND password = $2", body.Username, body.Password)
+	user, err := helpers.QueryRowType[User]("SELECT user_id, email, username FROM tokenauth.i9ca_user WHERE username = $1 AND password = $2", body.Username, body.Password)
 	if err != nil {
 		log.Error(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
@@ -51,7 +51,7 @@ func Login(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	return c.JSON(&fiber.Map{
+	return c.JSON(fiber.Map{
 		"msg": "Login success!",
 		"jwt": jwt,
 	})
