@@ -49,7 +49,7 @@ func main() {
 
 	// access a restricted resource : jwt auth
 
-	// perform an critically restricted operation : jwt auth, authenticator OTP
+	// perform an highly restricted operation : jwt auth, authenticator OTP
 
 	app.Listen(":5000")
 }
