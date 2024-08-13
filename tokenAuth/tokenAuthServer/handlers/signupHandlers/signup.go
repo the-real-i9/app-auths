@@ -1,12 +1,13 @@
 package signupHandlers
 
 import (
-	"codeauths/helpers"
-	"codeauths/tokenAuth/tokenAuthServer/globalVars"
 	"fmt"
-	"github.com/gofiber/fiber/v2/log"
+	"i9codesauths/helpers"
+	"i9codesauths/tokenAuth/tokenAuthServer/globalVars"
 	"math/rand"
 	"time"
+
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/gofiber/fiber/v2"
 )

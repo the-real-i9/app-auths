@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"codeauths/helpers"
-	"github.com/gofiber/fiber/v2/log"
+	"i9codesauths/helpers"
 	"os"
 	"time"
+
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"

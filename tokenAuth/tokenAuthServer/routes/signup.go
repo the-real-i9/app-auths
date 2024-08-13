@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"codeauths/tokenAuth/tokenAuthServer/handlers/signupHandlers"
+	"i9codesauths/tokenAuth/tokenAuthServer/handlers/signupHandlers"
 
 	"github.com/gofiber/fiber/v2"
 )

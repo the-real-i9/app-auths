@@ -1,10 +1,10 @@
 package main
 
 import (
-	"codeauths/helpers"
-	"codeauths/tokenAuth/tokenAuthServer/globalVars"
-	"codeauths/tokenAuth/tokenAuthServer/handlers"
-	"codeauths/tokenAuth/tokenAuthServer/routes"
+	"i9codesauths/helpers"
+	"i9codesauths/tokenAuth/tokenAuthServer/globalVars"
+	"i9codesauths/tokenAuth/tokenAuthServer/handlers"
+	"i9codesauths/tokenAuth/tokenAuthServer/routes"
 	"log"
 	"os"
 
@@ -12,10 +12,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/postgres"
+	"github.com/joho/godotenv"
 )
 
 func init() {
-	if err := helpers.LoadEnv("../../.env"); err != nil {
+	if err := godotenv.Load("../../.env"); err != nil {
 		log.Fatalln(err)
 	}
 
