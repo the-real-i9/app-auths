@@ -2,8 +2,8 @@ package signupHandlers
 
 import (
 	"fmt"
-	"i9codesauths/helpers"
-	"i9codesauths/tokenAuth/tokenAuthServer/globalVars"
+	"i9codesauths/backend/globalVars"
+	"i9codesauths/backend/helpers"
 	"math/rand"
 	"time"
 

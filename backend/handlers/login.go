@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"i9codesauths/helpers"
+	"i9codesauths/backend/helpers"
 	"os"
 	"time"
 

@@ -1,4 +1,4 @@
-# Token Authentication Strageties
+# Research | Iterations | Rough notes
 
 JWTs are used to repeatedly authenticate users into your API.
 

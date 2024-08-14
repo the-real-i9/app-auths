@@ -1,10 +1,10 @@
 package main
 
 import (
-	"i9codesauths/helpers"
-	"i9codesauths/tokenAuth/tokenAuthServer/globalVars"
-	"i9codesauths/tokenAuth/tokenAuthServer/handlers"
-	"i9codesauths/tokenAuth/tokenAuthServer/routes"
+	"i9codesauths/backend/globalVars"
+	"i9codesauths/backend/handlers"
+	"i9codesauths/backend/helpers"
+	"i9codesauths/backend/routes"
 	"log"
 	"os"
 
@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load("../../.env"); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalln(err)
 	}
 
