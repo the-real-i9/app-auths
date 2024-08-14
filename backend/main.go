@@ -2,13 +2,12 @@ package main
 
 import (
 	"i9codesauths/backend/globalVars"
-	"i9codesauths/backend/handlers"
 	"i9codesauths/backend/helpers"
 	"i9codesauths/backend/routes"
+	"i9codesauths/backend/routes/authRoutes"
 	"log"
 	"os"
 
-	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/postgres"
@@ -36,18 +35,18 @@ func main() {
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 
 	// signup | verify email : session auth | Email OTP auth
-	app.Route("/api/auth/signup", routes.Signup)
+	app.Route("/api/auth/signup", authRoutes.Signup)
 
 	// password reset : session auth | OTP generator server
 
-	// login : 2FA with TOTP | issue jwt
-	app.Post("/api/auth/login", handlers.Login)
+	// login : session auth | 2FA with TOTP | issue jwt
+	app.Route("/api/auth/login", authRoutes.Login)
 
-	app.Use(jwtware.New(jwtware.Config{
-		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("AUTH_JWT_SECRET"))},
-	}))
+	app.Route("/api/auth/oauth", authRoutes.OAuth)
 
-	// access a restricted resource : jwt auth
+	app.Route("/api/auth/sso", authRoutes.SSO)
+
+	app.Route("/api/app", routes.App)
 
 	app.Listen(":5000")
 }

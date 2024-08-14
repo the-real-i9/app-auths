@@ -1,4 +1,4 @@
-package handlers
+package loginHandlers
 
 import (
 	"i9codesauths/backend/helpers"
@@ -28,7 +28,7 @@ func Login(c *fiber.Ctx) error {
 		Username string `json:"username"`
 	}
 
-	user, err := helpers.QueryRowType[User]("SELECT user_id, email, username FROM tokenauth.i9ca_user WHERE username = $1 AND password = $2", body.Username, body.Password)
+	user, err := helpers.QueryRowType[User]("SELECT user_id, email, username FROM i9ca_user WHERE username = $1 AND password = $2", body.Username, body.Password)
 	if err != nil {
 		log.Error(err)
 		return c.SendStatus(fiber.StatusInternalServerError)

@@ -22,7 +22,7 @@ func SubmitEmail(c *fiber.Ctx) error {
 	}
 
 	// check if user with email already exists
-	userExists, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM tokenauth.i9ca_user WHERE email = $1)", body.Email)
+	userExists, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM i9ca_user WHERE email = $1)", body.Email)
 	if err != nil {
 		log.Error(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
@@ -112,7 +112,7 @@ func RegisterUser(c *fiber.Ctx) error {
 	}
 
 	// check if user with username already exists
-	userExists, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM tokenauth.i9ca_user WHERE username = $1)", body.Username)
+	userExists, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM i9ca_user WHERE username = $1)", body.Username)
 	if err != nil {
 		log.Error(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
@@ -124,7 +124,7 @@ func RegisterUser(c *fiber.Ctx) error {
 
 	email := session.Get("email").(string)
 
-	_, dbin_err := helpers.QueryRowField[bool]("INSERT INTO tokenauth.i9ca_user (email, username, password) VALUES ($1, $2, $3)", email, body.Username, body.Password)
+	_, dbin_err := helpers.QueryRowField[bool]("INSERT INTO i9ca_user (email, username, password) VALUES ($1, $2, $3)", email, body.Username, body.Password)
 	if dbin_err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
