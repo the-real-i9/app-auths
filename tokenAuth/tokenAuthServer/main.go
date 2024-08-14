@@ -40,7 +40,7 @@ func main() {
 
 	// password reset : session auth | OTP generator server
 
-	// login : issue jwt token
+	// login : 2FA with TOTP | issue jwt
 	app.Post("/api/auth/login", handlers.Login)
 
 	app.Use(jwtware.New(jwtware.Config{
@@ -48,8 +48,6 @@ func main() {
 	}))
 
 	// access a restricted resource : jwt auth
-
-	// perform an highly restricted operation : jwt auth, authenticator OTP
 
 	app.Listen(":5000")
 }
