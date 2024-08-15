@@ -39,7 +39,7 @@ func main() {
 
 	// password reset : session auth | OTP generator server
 
-	// login : session auth | 2FA with TOTP | issue jwt
+	// login : session auth | user pass | 2FA with TOTP | issue jwt
 	app.Route("/api/auth/login", authRoutes.Login)
 
 	app.Route("/api/auth/oauth", authRoutes.OAuth)
