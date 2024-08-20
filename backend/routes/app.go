@@ -13,4 +13,7 @@ func App(router fiber.Router) {
 	}))
 
 	// access a restricted resource : jwt auth
+	router.Get("/restricted", func(c *fiber.Ctx) error {
+		return c.JSON(c.Locals("user"))
+	})
 }

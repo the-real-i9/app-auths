@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/gofiber/fiber/v2/log"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -30,7 +30,7 @@ func Login(c *fiber.Ctx) error {
 
 	user, err := helpers.QueryRowType[User]("SELECT user_id, email, username FROM i9ca_user WHERE username = $1 AND password = $2", body.Username, body.Password)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
@@ -48,7 +48,7 @@ func Login(c *fiber.Ctx) error {
 	// sign token with secret -> (header.payload.signature)
 	jwt, err := token.SignedString([]byte(os.Getenv("AUTH_JWT_SECRET")))
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 

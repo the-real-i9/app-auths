@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gofiber/fiber/v2/log"
+	"log"
 
 	"gopkg.in/gomail.v2"
 )
@@ -31,14 +31,14 @@ func SendMail(email string, subject string, body string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", user)
 	m.SetHeader("To", email)
-	m.SetHeader("Subject", fmt.Sprintf("i9i9codesauths - %s", subject))
+	m.SetHeader("Subject", fmt.Sprintf("i9codesauths - %s", subject))
 	m.SetBody("text/html", body)
 
 	d := gomail.NewDialer("smtp.gmail.com", 465, user, pass)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
 	if err := d.DialAndSend(m); err != nil {
-		log.Error(err)
+		log.Println(err)
 		return
 	}
 }

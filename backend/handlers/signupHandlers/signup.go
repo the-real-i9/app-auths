@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/gofiber/fiber/v2/log"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,7 +24,7 @@ func SubmitEmail(c *fiber.Ctx) error {
 	// check if user with email already exists
 	userExists, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM i9ca_user WHERE email = $1)", body.Email)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
@@ -41,6 +41,8 @@ func SubmitEmail(c *fiber.Ctx) error {
 		panic(err)
 	}
 
+	go helpers.SendMail(body.Email, "Verify your email", fmt.Sprintln("Your email verification code is", verfToken))
+
 	session.Set("email", body.Email)
 	session.Set("verificationToken", verfToken)
 	session.Set("verificationTokenExpires", verfTokenExpires)
@@ -50,9 +52,7 @@ func SubmitEmail(c *fiber.Ctx) error {
 		panic(save_err)
 	}
 
-	go helpers.SendMail(body.Email, "Verify your email", fmt.Sprintln("Your email verification code is", verfToken))
-
-	return c.SendString("Email verification code has been sent to " + body.Email)
+	return c.SendString("Email verification code has been sent to " + body.Email + "\n")
 }
 
 func VerifyEmail(c *fiber.Ctx) error {
@@ -85,11 +85,17 @@ func VerifyEmail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString("Verification code expired")
 	}
 
+	go helpers.SendMail(email, "Email verification success", "Your email has been verified!")
+
 	session.Delete("verificationToken")
 	session.Delete("verificationTokenExpires")
 	session.Set("signupState", "register user")
 
-	return c.SendString("Your email " + email + " has been verified!")
+	if save_err := session.Save(); save_err != nil {
+		panic(save_err)
+	}
+
+	return c.SendString("Your email " + email + " has been verified!\n")
 }
 
 func RegisterUser(c *fiber.Ctx) error {
@@ -114,7 +120,7 @@ func RegisterUser(c *fiber.Ctx) error {
 	// check if user with username already exists
 	userExists, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM i9ca_user WHERE username = $1)", body.Username)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
@@ -124,8 +130,9 @@ func RegisterUser(c *fiber.Ctx) error {
 
 	email := session.Get("email").(string)
 
-	_, dbin_err := helpers.QueryRowField[bool]("INSERT INTO i9ca_user (email, username, password) VALUES ($1, $2, $3)", email, body.Username, body.Password)
+	_, dbin_err := helpers.QueryRowField[bool]("INSERT INTO i9ca_user (email, username, password) VALUES ($1, $2, $3) RETURNING true", email, body.Username, body.Password)
 	if dbin_err != nil {
+		log.Println(dbin_err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
@@ -133,5 +140,5 @@ func RegisterUser(c *fiber.Ctx) error {
 		panic(sd_err)
 	}
 
-	return c.SendString("Registration success. Proceed to login.")
+	return c.SendString("Registration success. Proceed to login.\n")
 }

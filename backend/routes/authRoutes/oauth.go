@@ -5,9 +5,9 @@ import (
 )
 
 func OAuth(router fiber.Router) {
-	router.Get("/google/auth_url")
-	router.Post("/google/login")
+	router.Get("/google/auth_url", nil)
+	router.Post("/google/login", nil)
 
-	router.Get("/github/auth_url")
-	router.Get("/github/login")
+	router.Get("/github/auth_url", nil)
+	router.Get("/github/login", nil)
 }
