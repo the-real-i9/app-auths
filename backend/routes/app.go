@@ -12,6 +12,7 @@ import (
 func App(router fiber.Router) {
 	router.Use(jwtware.New(jwtware.Config{
 		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("AUTH_JWT_SECRET"))},
+		ContextKey: "auth",
 	}))
 
 	// access a restricted resource : jwt auth
@@ -22,13 +23,12 @@ func App(router fiber.Router) {
 			Username string `json:"username"`
 		}
 
-		user := c.Locals("user").(*jwt.Token)
-		claims := user.Claims.(jwt.MapClaims)
+		userMap := c.Locals("auth").(*jwt.Token).Claims.(jwt.MapClaims)["data"].(map[string]any)
 
-		var userdata User
+		var user User
 
-		helpers.MapToStruct(claims["data"].(map[string]any), &userdata)
+		helpers.MapToStruct(userMap, &user)
 
-		return c.JSON(userdata)
+		return c.JSON(user)
 	})
 }
