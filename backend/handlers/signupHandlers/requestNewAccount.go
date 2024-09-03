@@ -18,7 +18,7 @@ func RequestNewAccount(c *fiber.Ctx) error {
 	}
 
 	if err := c.BodyParser(&body); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("invalid payload")
+		return c.Status(fiber.StatusUnprocessableEntity).SendString(fiber.ErrUnprocessableEntity.Message)
 	}
 
 	// check if user with email already exists
