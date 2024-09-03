@@ -1,8 +1,8 @@
 package signupHandlers
 
 import (
-	"appauths/backend/globalVars"
-	"appauths/backend/helpers"
+	"appauths/globalVars"
+	"appauths/helpers"
 	"log"
 
 	"github.com/gofiber/fiber/v2"

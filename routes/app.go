@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"appauths/backend/appTypes"
-	"appauths/backend/helpers"
+	"appauths/appTypes"
+	"appauths/helpers"
 	"os"
 	"strings"
 

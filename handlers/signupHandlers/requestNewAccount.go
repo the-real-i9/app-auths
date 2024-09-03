@@ -1,8 +1,8 @@
 package signupHandlers
 
 import (
-	"appauths/backend/globalVars"
-	"appauths/backend/helpers"
+	"appauths/globalVars"
+	"appauths/helpers"
 	"fmt"
 	"math/rand"
 	"time"
