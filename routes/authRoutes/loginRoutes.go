@@ -6,25 +6,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CredLogin(router fiber.Router) {
-	// a cookie restricted to this path is used to maintain a session through the login process
-	router.Post("/", loginHandlers.CredLogin)
-
-}
-
+// Multi-factor authentication
 func MFALogin(router fiber.Router) {
-	router.Post("/otp/email")
+	router.Post("/otp/email/send_otp", nil)
+	router.Post("/otp/email/verify", nil)
 
-	router.Get("/totp/barcode", nil)
+	router.Get("/totp/barcode_setupkey", nil)
 	router.Post("/totp/verify", nil)
 }
 
+// SSO login
 func SSO(router fiber.Router) {
 
 }
 
 func Login(router fiber.Router) {
-	router.Route("/cred", CredLogin)
+	// a cookie restricted to this path is used to maintain a session through the login process
+	router.Post("/cred", loginHandlers.CredLogin)
 
 	router.Route("/mfa", MFALogin)
 

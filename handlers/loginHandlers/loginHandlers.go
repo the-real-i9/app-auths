@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Login with credentials
 func CredLogin(c *fiber.Ctx) error {
 
 	var body struct {
