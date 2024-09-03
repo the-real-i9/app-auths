@@ -34,17 +34,9 @@ func init() {
 func main() {
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 
-	// signup | verify email : session auth | Email OTP auth
 	app.Route("/api/auth/signup", authRoutes.Signup)
 
-	// password reset : session auth | OTP generator server
-
-	// login : session auth | user pass | 2FA with TOTP | issue jwt
 	app.Route("/api/auth/login", authRoutes.Login)
-
-	app.Route("/api/auth/oauth", authRoutes.OAuth)
-
-	app.Route("/api/auth/sso", authRoutes.SSO)
 
 	app.Route("/api/app", routes.App)
 

@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Login(c *fiber.Ctx) error {
+func CredLogin(c *fiber.Ctx) error {
 
 	var body struct {
 		Username string `json:"username"`
