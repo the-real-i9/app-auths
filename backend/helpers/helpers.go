@@ -31,7 +31,7 @@ func SendMail(email string, subject string, body string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", user)
 	m.SetHeader("To", email)
-	m.SetHeader("Subject", fmt.Sprintf("i9codesauths - %s", subject))
+	m.SetHeader("Subject", fmt.Sprintf("appauths - %s", subject))
 	m.SetBody("text/html", body)
 
 	d := gomail.NewDialer("smtp.gmail.com", 465, user, pass)

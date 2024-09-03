@@ -1,7 +1,7 @@
 package authRoutes
 
 import (
-	"i9codesauths/backend/handlers/loginHandlers"
+	"appauths/backend/handlers/loginHandlers"
 
 	"github.com/gofiber/fiber/v2"
 )

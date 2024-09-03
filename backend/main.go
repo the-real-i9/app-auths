@@ -1,10 +1,10 @@
 package main
 
 import (
-	"i9codesauths/backend/globalVars"
-	"i9codesauths/backend/helpers"
-	"i9codesauths/backend/routes"
-	"i9codesauths/backend/routes/authRoutes"
+	"appauths/backend/globalVars"
+	"appauths/backend/helpers"
+	"appauths/backend/routes"
+	"appauths/backend/routes/authRoutes"
 	"log"
 	"os"
 

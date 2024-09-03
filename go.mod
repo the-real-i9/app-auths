@@ -1,4 +1,4 @@
-module i9codesauths
+module appauths
 
 go 1.22.0
 
