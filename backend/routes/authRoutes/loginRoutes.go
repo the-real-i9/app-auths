@@ -12,16 +12,6 @@ func CredLogin(router fiber.Router) {
 
 }
 
-func GoogleLogin(router fiber.Router) {
-	router.Get("/auth_url", nil)
-	router.Post("/", nil)
-}
-
-func GithubLogin(router fiber.Router) {
-	router.Get("/auth_url", nil)
-	router.Post("/", nil)
-}
-
 func MFALogin(router fiber.Router) {
 	router.Post("/otp/email")
 
@@ -34,10 +24,7 @@ func SSO(router fiber.Router) {
 }
 
 func Login(router fiber.Router) {
-	router.Route("/with_cred", CredLogin)
-
-	router.Route("/oauth/with_google", GoogleLogin)
-	router.Route("/oauth/with_github", GithubLogin)
+	router.Route("/cred", CredLogin)
 
 	router.Route("/mfa", MFALogin)
 

@@ -1,4 +1,4 @@
-package credSignupHandlers
+package signupHandlers
 
 import (
 	"appauths/backend/globalVars"
