@@ -3,14 +3,15 @@ package authRoutes
 import "github.com/gofiber/fiber/v2"
 
 func GoogleOAuth(router fiber.Router) {
-	// generate authorization URL
+	// generate and authorization URL
 	router.Get("/auth_url", nil)
 
-	// exchange authorization code for access token
+	// exchange authorization code for tokens (access_token & refresh_token)
+	// save both tokens (hashed) in the database
 	router.Get("/callback", nil)
 
-	// when needed, refresh token for new access token
-	router.Get("/refresh_token", nil)
+	// when needed, use refresh_token to get a new access_token
+	router.Post("/refresh_token", nil)
 
 	// use access token to request for user profile info
 	router.Get("/", nil)
@@ -23,6 +24,6 @@ func GithubOAuth(router fiber.Router) {
 
 func OAuth(router fiber.Router) {
 
-	router.Route("/oauth/google", GoogleOAuth)
-	router.Route("/oauth/github", GithubOAuth)
+	router.Route("/google", GoogleOAuth)
+	router.Route("/github", GithubOAuth)
 }
