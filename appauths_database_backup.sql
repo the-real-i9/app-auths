@@ -1,5 +1,5 @@
 --
--- i9QL database dump
+-- PostgreSQL database dump
 --
 
 -- Dumped from database version 16.3 (Ubuntu 16.3-1.pgdg22.04+1)
@@ -57,17 +57,17 @@ ALTER SEQUENCE public.auth_user_user_id_seq OWNED BY public.auth_user.user_id;
 
 
 --
--- Name: ongoing_signup; Type: TABLE; Schema: public; Owner: i9
+-- Name: ongoing_auth; Type: TABLE; Schema: public; Owner: i9
 --
 
-CREATE TABLE public.ongoing_signup (
+CREATE TABLE public.ongoing_auth (
     k character varying(64) DEFAULT ''::character varying NOT NULL,
     v bytea NOT NULL,
     e bigint DEFAULT '0'::bigint NOT NULL
 );
 
 
-ALTER TABLE public.ongoing_signup OWNER TO i9;
+ALTER TABLE public.ongoing_auth OWNER TO i9;
 
 --
 -- Name: auth_user user_id; Type: DEFAULT; Schema: public; Owner: i9
@@ -81,15 +81,14 @@ ALTER TABLE ONLY public.auth_user ALTER COLUMN user_id SET DEFAULT nextval('publ
 --
 
 COPY public.auth_user (user_id, email, username, password) FROM stdin;
-3	oluwarinolasam@gmail.com	bross	browski
 \.
 
 
 --
--- Data for Name: ongoing_signup; Type: TABLE DATA; Schema: public; Owner: i9
+-- Data for Name: ongoing_auth; Type: TABLE DATA; Schema: public; Owner: i9
 --
 
-COPY public.ongoing_signup (k, v, e) FROM stdin;
+COPY public.ongoing_auth (k, v, e) FROM stdin;
 \.
 
 
@@ -97,25 +96,10 @@ COPY public.ongoing_signup (k, v, e) FROM stdin;
 -- Name: auth_user_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: i9
 --
 
-SELECT pg_catalog.setval('public.auth_user_user_id_seq', 3, true);
+SELECT pg_catalog.setval('public.auth_user_user_id_seq', 1, false);
 
 
 --
--- Name: ongoing_signup ongoing_signup_pkey; Type: CONSTRAINT; Schema: public; Owner: i9
---
-
-ALTER TABLE ONLY public.ongoing_signup
-    ADD CONSTRAINT ongoing_signup_pkey PRIMARY KEY (k);
-
-
---
--- Name: e; Type: INDEX; Schema: public; Owner: i9
---
-
-CREATE INDEX e ON public.ongoing_signup USING btree (e);
-
-
---
--- i9QL database dump complete
+-- PostgreSQL database dump complete
 --
 

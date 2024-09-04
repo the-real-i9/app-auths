@@ -36,7 +36,7 @@ func RequestNewAccount(c *fiber.Ctx) error {
 	verfTokenExpires := time.Now().Add(30 * time.Minute).Unix()
 
 	// create signup session with verification token
-	session, err := globalVars.SignupSessionStore.Get(c)
+	session, err := globalVars.AuthSessionStore.Get(c)
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ func RequestNewAccount(c *fiber.Ctx) error {
 	session.Set("email", body.Email)
 	session.Set("verificationToken", verfToken)
 	session.Set("verificationTokenExpires", verfTokenExpires)
-	session.Set("step", "verify email")
+	session.Set("step", "signup: verify email")
 
 	if save_err := session.Save(); save_err != nil {
 		panic(save_err)

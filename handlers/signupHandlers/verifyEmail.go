@@ -9,12 +9,12 @@ import (
 )
 
 func VerifyEmail(c *fiber.Ctx) error {
-	session, err := globalVars.SignupSessionStore.Get(c)
+	session, err := globalVars.AuthSessionStore.Get(c)
 	if err != nil {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "verify email" {
+	if session.Get("step").(string) != "signup: verify email" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
@@ -42,7 +42,7 @@ func VerifyEmail(c *fiber.Ctx) error {
 
 	session.Delete("verificationToken")
 	session.Delete("verificationTokenExpires")
-	session.Set("step", "register user")
+	session.Set("step", "signup: register user")
 
 	if save_err := session.Save(); save_err != nil {
 		panic(save_err)

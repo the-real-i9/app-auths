@@ -10,12 +10,12 @@ import (
 )
 
 func RegisterUser(c *fiber.Ctx) error {
-	session, err := globalVars.SignupSessionStore.Get(c)
+	session, err := globalVars.AuthSessionStore.Get(c)
 	if err != nil {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "register user" {
+	if session.Get("step").(string) != "signup: register user" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 

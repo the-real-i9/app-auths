@@ -23,11 +23,11 @@ func init() {
 		log.Fatalln(err)
 	}
 
-	storage := postgres.New(postgres.Config{ConnectionURI: os.Getenv("PGDATABASE_URL"), Table: "ongoing_signup"})
+	storage := postgres.New(postgres.Config{ConnectionURI: os.Getenv("PGDATABASE_URL"), Table: "ongoing_auth"})
 
-	globalVars.SignupSessionStore = session.New(session.Config{
+	globalVars.AuthSessionStore = session.New(session.Config{
 		Storage:    storage,
-		CookiePath: "/api/auth/signup",
+		CookiePath: "/api/auth",
 	})
 }
 
