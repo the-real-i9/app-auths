@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterUser(c *fiber.Ctx) error {
@@ -24,7 +25,7 @@ func RegisterUser(c *fiber.Ctx) error {
 	}
 
 	if err := c.BodyParser(&body); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("invalid payload")
+		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
 	}
 
 	// check if user with username already exists
@@ -38,9 +39,14 @@ func RegisterUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString("username already taken")
 	}
 
-	email := session.Get("email").(string)
+	res, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
 
-	_, dbin_err := helpers.QueryRowField[bool]("INSERT INTO auth_user (email, username, password) VALUES ($1, $2, $3) RETURNING true", email, body.Username, body.Password)
+	hashPwd := string(res)
+
+	_, dbin_err := helpers.QueryRowField[bool]("INSERT INTO auth_user (email, username, password) VALUES ($1, $2, $3) RETURNING true", session.Get("email").(string), body.Username, hashPwd)
 	if dbin_err != nil {
 		log.Println(dbin_err)
 		return c.SendStatus(fiber.StatusInternalServerError)

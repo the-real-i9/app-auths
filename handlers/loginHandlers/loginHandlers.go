@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Login with credentials
@@ -23,17 +24,26 @@ func CredLogin(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString(fiber.ErrUnprocessableEntity.Message)
 	}
 
-	user, err := helpers.QueryRowType[appTypes.User]("SELECT user_id, email, username FROM auth_user WHERE username = $1 AND password = $2", body.Username, body.Password)
+	userData, err := helpers.QueryRowType[map[string]any]("SELECT user_id, email, username, password FROM auth_user WHERE username = $1", body.Username)
 	if err != nil {
 		log.Println(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	if user == nil {
+	if userData == nil {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString("incorrect username or password")
 	}
 
-	// create token -> (header.payload)
+	hashedPwd := (*userData)["password"].(string)
+
+	if cmp_err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(body.Password)); cmp_err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).SendString("incorrect username or password")
+	}
+
+	var user appTypes.User
+
+	helpers.MapToStruct(*userData, &user)
+
 	jwt := helpers.JwtSign(user, os.Getenv("AUTH_JWT_SECRET"), time.Now().Add(24*time.Hour))
 
 	return c.JSON(fiber.Map{
