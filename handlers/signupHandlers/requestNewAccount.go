@@ -35,13 +35,13 @@ func RequestNewAccount(c *fiber.Ctx) error {
 	verfToken := rand.Intn(899999) + 100000
 	verfTokenExpires := time.Now().Add(30 * time.Minute).Unix()
 
+	go helpers.SendMail(body.Email, "Verify your email", fmt.Sprintln("Your email verification code is", verfToken))
+
 	// create signup session with verification token
 	session, err := globalVars.AuthSessionStore.Get(c)
 	if err != nil {
 		panic(err)
 	}
-
-	go helpers.SendMail(body.Email, "Verify your email", fmt.Sprintln("Your email verification code is", verfToken))
 
 	session.Set("email", body.Email)
 	session.Set("verificationToken", verfToken)
