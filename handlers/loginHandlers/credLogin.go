@@ -71,7 +71,7 @@ func CredLogin(c *fiber.Ctx) error {
 	if mfaType == "totp" {
 		session.Set("step", "login: 2FA with TOTP")
 	} else {
-		session.Set("step", "login: 2FA with email OTP")
+		session.Set("step", "login: 2FA with OTP")
 	}
 
 	session.Set("email", user.Email)

@@ -49,6 +49,10 @@ func ValidatePasscode(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
+	if err := session.Destroy(); err != nil {
+		panic(err)
+	}
+
 	// log the user in
 	jwt := helpers.JwtSign(user, os.Getenv("AUTH_JWT_SECRET"), time.Now().Add(24*time.Hour))
 
