@@ -13,8 +13,14 @@ func MFALogin(router fiber.Router) {
 	router.Post("/otp/email/send_otp", emailOTPLoginHandlers.SendOTP)
 	router.Post("/otp/email/verify", emailOTPLoginHandlers.VerifyOTP)
 
-	router.Get("/totp/barcode_setupkey", totpLoginHandlers.BarcodeSetupKey)
-	router.Post("/totp/verify", totpLoginHandlers.VerifyTOTP)
+	// create session and store secret in it for the next endpoint
+	router.Get("/totp/setup/barcode_setupkey", totpLoginHandlers.BarcodeSetupKey)
+	// retrieve secret from session,
+	// if it works, store it permanently,
+	// destroy session
+	router.Post("/totp/setup/validate_passcode", totpLoginHandlers.ValidatePasscodeSetup)
+
+	router.Post("/totp/validate_passcode", totpLoginHandlers.ValidatePasscode)
 }
 
 // SSO login
