@@ -28,7 +28,8 @@ CREATE TABLE public.auth_user (
     user_id integer NOT NULL,
     email character varying NOT NULL,
     username character varying NOT NULL,
-    password character varying NOT NULL
+    password character varying NOT NULL,
+    totp_setup_key character varying
 );
 
 
@@ -80,7 +81,7 @@ ALTER TABLE ONLY public.auth_user ALTER COLUMN user_id SET DEFAULT nextval('publ
 -- Data for Name: auth_user; Type: TABLE DATA; Schema: public; Owner: i9
 --
 
-COPY public.auth_user (user_id, email, username, password) FROM stdin;
+COPY public.auth_user (user_id, email, username, password, totp_setup_key) FROM stdin;
 \.
 
 

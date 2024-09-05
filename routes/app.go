@@ -2,6 +2,7 @@ package routes
 
 import (
 	"appauths/appTypes"
+	"appauths/handlers/totpHandlers"
 	"appauths/helpers"
 	"os"
 	"strings"
@@ -29,4 +30,6 @@ func App(router fiber.Router) {
 
 		return c.JSON(user)
 	})
+	router.Get("/totp/setup/barcode_setupkey", totpHandlers.BarcodeSetupKey)
+	router.Post("/totp/setup/validate_passcode", totpHandlers.ValidateSetupPasscode)
 }

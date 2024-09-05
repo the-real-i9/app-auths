@@ -23,11 +23,17 @@ func init() {
 		log.Fatalln(err)
 	}
 
-	storage := postgres.New(postgres.Config{ConnectionURI: os.Getenv("PGDATABASE_URL"), Table: "ongoing_auth"})
+	authStorage := postgres.New(postgres.Config{ConnectionURI: os.Getenv("PGDATABASE_URL"), Table: "ongoing_auth"})
+	appStorage := postgres.New(postgres.Config{ConnectionURI: os.Getenv("PGDATABASE_URL"), Table: "ongoing_process"})
 
 	globalVars.AuthSessionStore = session.New(session.Config{
-		Storage:    storage,
+		Storage:    authStorage,
 		CookiePath: "/api/auth",
+	})
+
+	globalVars.AppSessionStore = session.New(session.Config{
+		Storage:    appStorage,
+		CookiePath: "/api/app",
 	})
 }
 
