@@ -2,6 +2,7 @@ package loginHandlers
 
 import (
 	"appauths/appTypes"
+	"appauths/globalVars"
 	"appauths/helpers"
 	"os"
 	"time"
@@ -24,7 +25,8 @@ func CredLogin(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).SendString(fiber.ErrUnprocessableEntity.Message)
 	}
 
-	userData, err := helpers.QueryRowType[map[string]any]("SELECT user_id, email, username, password FROM auth_user WHERE username = $1", body.Username)
+	userData, err := helpers.QueryRowType[map[string]any]("SELECT user_id, email, username, password, mfa_enabled, mfa_type FROM auth_user WHERE username = $1", body.Username)
+
 	if err != nil {
 		log.Println(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
@@ -44,10 +46,44 @@ func CredLogin(c *fiber.Ctx) error {
 
 	helpers.MapToStruct(*userData, &user)
 
-	jwt := helpers.JwtSign(user, os.Getenv("AUTH_JWT_SECRET"), time.Now().Add(24*time.Hour))
+	mfaEnabled := (*userData)["mfa_enabled"].(bool)
+	mfaType := (*userData)["mfa_type"].(string)
+
+	if !mfaEnabled {
+		jwt := helpers.JwtSign(user, os.Getenv("AUTH_JWT_SECRET"), time.Now().Add(24*time.Hour))
+
+		return c.JSON(fiber.Map{
+			"2faEnabled": false,
+			"msg":        "Login success!",
+			"authJwt":    jwt,
+		})
+	}
+
+	// 2FA is enabled for the user
+
+	session, err := globalVars.AuthSessionStore.Get(c)
+	if err != nil {
+		panic(err)
+	}
+
+	// set "step" key to either "login: 2FA with TOTP" or "login: 2FA with Email OTP", whichever you choose
+	// session.Set("step", "login: 2FA with Email OTP")
+	if mfaType == "totp" {
+		session.Set("step", "login: 2FA with TOTP")
+	} else {
+		session.Set("step", "login: 2FA with email OTP")
+	}
+
+	session.Set("email", user.Email)
+	session.SetExpiry(30 * time.Minute)
+
+	if err := session.Save(); err != nil {
+		panic(err)
+	}
 
 	return c.JSON(fiber.Map{
-		"msg":     "Login success!",
-		"authJwt": jwt,
+		"2faEnabled": true,
+		"2faType":    mfaType,
+		"msg":        "Proceed to the target 2FA type endpoint",
 	})
 }
