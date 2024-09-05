@@ -108,5 +108,5 @@ func ValidateSetupPasscode(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	return c.Status(200).SendString("TOTP setup successful")
+	return c.Status(200).SendString("TOTP 2FA enabled")
 }

@@ -2,7 +2,7 @@ package authRoutes
 
 import (
 	"appauths/handlers/loginHandlers"
-	"appauths/handlers/loginHandlers/emailOTPLoginHandlers"
+	"appauths/handlers/loginHandlers/otpLoginHandlers"
 	"appauths/handlers/loginHandlers/totpLoginHandlers"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,10 +10,10 @@ import (
 
 // Multi-factor authentication
 func MFALogin(router fiber.Router) {
-	router.Get("/otp/email/send_otp", emailOTPLoginHandlers.SendOTP)
-	router.Post("/otp/email/verify", emailOTPLoginHandlers.VerifyOTP)
+	router.Get("/otp_2fa/send_otp", otpLoginHandlers.SendOTP)
+	router.Post("/otp_2fa/verify", otpLoginHandlers.VerifyOTP)
 
-	router.Post("/totp/validate_passcode", totpLoginHandlers.ValidatePasscode)
+	router.Post("/totp_2fa/validate_passcode", totpLoginHandlers.ValidatePasscode)
 }
 
 // SSO login

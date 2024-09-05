@@ -1,4 +1,4 @@
-package emailOTPLoginHandlers
+package otpLoginHandlers
 
 import (
 	"appauths/appTypes"
