@@ -28,7 +28,7 @@ CREATE TABLE public.auth_user (
     user_id integer NOT NULL,
     email character varying NOT NULL,
     username character varying NOT NULL,
-    password character varying NOT NULL,
+    password character varying,
     totp_setup_key character varying,
     mfa_enabled boolean DEFAULT false NOT NULL,
     mfa_type character varying,
@@ -125,11 +125,43 @@ SELECT pg_catalog.setval('public.auth_user_user_id_seq', 1, false);
 
 
 --
+-- Name: auth_user auth_user_email_key; Type: CONSTRAINT; Schema: public; Owner: i9
+--
+
+ALTER TABLE ONLY public.auth_user
+    ADD CONSTRAINT auth_user_email_key UNIQUE (email);
+
+
+--
+-- Name: auth_user auth_user_username_key; Type: CONSTRAINT; Schema: public; Owner: i9
+--
+
+ALTER TABLE ONLY public.auth_user
+    ADD CONSTRAINT auth_user_username_key UNIQUE (username);
+
+
+--
+-- Name: ongoing_auth ongoing_auth_pkey; Type: CONSTRAINT; Schema: public; Owner: i9
+--
+
+ALTER TABLE ONLY public.ongoing_auth
+    ADD CONSTRAINT ongoing_auth_pkey PRIMARY KEY (k);
+
+
+--
 -- Name: ongoing_process ongoing_process_pkey; Type: CONSTRAINT; Schema: public; Owner: i9
 --
 
 ALTER TABLE ONLY public.ongoing_process
     ADD CONSTRAINT ongoing_process_pkey PRIMARY KEY (k);
+
+
+--
+-- Name: auth_user user_id_pk; Type: CONSTRAINT; Schema: public; Owner: i9
+--
+
+ALTER TABLE ONLY public.auth_user
+    ADD CONSTRAINT user_id_pk PRIMARY KEY (user_id);
 
 
 --

@@ -1,10 +1,14 @@
 package oauthHandlers
 
 import (
+	"appauths/src/appTypes"
 	"appauths/src/globalVars"
 	"appauths/src/helpers"
 	"context"
+	"log"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
@@ -25,10 +29,9 @@ func GoogleAuthCallback(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).SendString(err.Error())
 	}
 
-	if sessState, ok := session.Get("state").(string); ok {
-		if sessState != *state {
-			return c.SendStatus(fiber.StatusUnauthorized)
-		}
+	sessState, _ := session.Get("state").(string)
+	if sessState != *state {
+		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
 	authCode := c.Query("code")
@@ -50,13 +53,43 @@ func GoogleAuthCallback(c *fiber.Ctx) error {
 		panic(err)
 	}
 
+	userEmail := person.EmailAddresses[0].Value
 	// check if the user already has an account,
+	user, err := helpers.QueryRowType[appTypes.User]("SELECT user_id, email, username FROM auth_user WHERE email = $1", userEmail)
+	if err != nil {
+		log.Println(err)
+		c.SendStatus(fiber.StatusInternalServerError)
+	}
+
 	// if yes, return a JWT token (log the user in)
-	// if no, sign the user in with a random username (user can change it later)
+	if user != nil {
+		jwt := helpers.JwtSign(user, os.Getenv("AUTH_JWT_SECRET"), time.Now().Add(24*time.Hour))
+
+		return c.JSON(fiber.Map{
+			"msg":     "Login success!",
+			"authJwt": jwt,
+		})
+	}
+
+	// if no, sign up the user using the portion before the @ on the user's email
+	// (invalid characters replaced with "_") (user can change it later)
+	strRep := strings.NewReplacer(".", "_", "-", "_")
+	tempUsername := strRep.Replace(strings.Split(userEmail, "@")[0])
+	newUser, err := helpers.QueryRowType[appTypes.User]("INSERT INTO auth_user (email, username) VALUES ($1, $2) RETURNING user_id, email, username", userEmail, tempUsername)
+	if err != nil {
+		log.Println(err)
+		c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	// return a JWT token (log the user in)
+	jwt := helpers.JwtSign(newUser, os.Getenv("AUTH_JWT_SECRET"), time.Now().Add(24*time.Hour))
 
 	if err := session.Destroy(); err != nil {
 		panic(err)
 	}
 
-	return c.JSON(person)
+	return c.JSON(fiber.Map{
+		"msg":     "Login success!",
+		"authJwt": jwt,
+	})
 }
