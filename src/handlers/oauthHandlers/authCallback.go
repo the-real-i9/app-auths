@@ -48,7 +48,7 @@ func GoogleAuthCallback(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	person, err := service.People.Get("people/me").PersonFields("names,nicknames,emailAddresses").Do()
+	person, err := service.People.Get("people/me").PersonFields("emailAddresses").Do()
 	if err != nil {
 		panic(err)
 	}
