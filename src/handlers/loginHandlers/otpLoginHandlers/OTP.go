@@ -1,9 +1,9 @@
 package otpLoginHandlers
 
 import (
-	"appauths/appTypes"
-	"appauths/globalVars"
-	"appauths/helpers"
+	"appauths/src/appTypes"
+	"appauths/src/globalVars"
+	"appauths/src/helpers"
 	"fmt"
 	"log"
 	"math/rand"

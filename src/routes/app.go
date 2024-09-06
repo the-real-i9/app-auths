@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"appauths/appTypes"
-	"appauths/handlers/otpHandlers"
-	"appauths/handlers/totpHandlers"
-	"appauths/helpers"
+	"appauths/src/appTypes"
+	"appauths/src/handlers/otpHandlers"
+	"appauths/src/handlers/totpHandlers"
+	"appauths/src/helpers"
 	"os"
 	"strings"
 

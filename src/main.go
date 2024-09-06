@@ -1,10 +1,10 @@
 package main
 
 import (
-	"appauths/globalVars"
-	"appauths/helpers"
-	"appauths/routes"
-	"appauths/routes/authRoutes"
+	"appauths/src/globalVars"
+	"appauths/src/helpers"
+	"appauths/src/routes"
+	"appauths/src/routes/authRoutes"
 	"log"
 	"os"
 
