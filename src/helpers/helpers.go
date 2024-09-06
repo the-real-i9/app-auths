@@ -17,10 +17,10 @@ func MapToStruct(val map[string]any, structData any) {
 	json.Unmarshal(bt, structData)
 }
 
-func ToStruct(val any, structData any) {
+func ToData(val, data any) {
 	bt, _ := json.Marshal(val)
 
-	json.Unmarshal(bt, structData)
+	json.Unmarshal(bt, data)
 }
 
 func SendMail(email string, subject string, body string) {

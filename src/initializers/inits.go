@@ -17,10 +17,10 @@ func InitOauth2Config() {
 		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", "openid"},
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://accounts.google.com/o/oauth2/v2/auth",
+			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
 			TokenURL: "https://oauth2.googleapis.com/token",
 		},
-		RedirectURL: "http://localhost:5000/api/auth/oauth/google/callback",
+		RedirectURL: "http://127.0.0.1:5000/api/auth/oauth/google/callback",
 	}
 }
 

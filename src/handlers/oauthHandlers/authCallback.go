@@ -4,7 +4,6 @@ import (
 	"appauths/src/globalVars"
 	"appauths/src/helpers"
 	"context"
-	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,8 +25,10 @@ func GoogleAuthCallback(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).SendString(err.Error())
 	}
 
-	if session.Get("state").(string) != *state {
-		return c.SendStatus(fiber.StatusUnauthorized)
+	if sessState, ok := session.Get("state").(string); ok {
+		if sessState != *state {
+			return c.SendStatus(fiber.StatusUnauthorized)
+		}
 	}
 
 	authCode := c.Query("code")
@@ -44,15 +45,18 @@ func GoogleAuthCallback(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	person, err := service.People.Get("people/me").Fields("names", "nicknames", "emailAddresses").Do()
+	person, err := service.People.Get("people/me").PersonFields("names,nicknames,emailAddresses").Do()
 	if err != nil {
-		log.Println(err)
-		return c.SendStatus(fiber.StatusInternalServerError)
+		panic(err)
 	}
 
 	// check if the user already has an account,
 	// if yes, return a JWT token (log the user in)
 	// if no, sign the user in with a random username (user can change it later)
+
+	if err := session.Destroy(); err != nil {
+		panic(err)
+	}
 
 	return c.JSON(person)
 }

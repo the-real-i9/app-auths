@@ -31,4 +31,5 @@ func GoogleAuthURL(c *fiber.Ctx) error {
 	}
 
 	return c.SendString(fmt.Sprintf("Visit the URL for the auth dialog: %v", url))
+	// return c.Redirect(url)
 }
