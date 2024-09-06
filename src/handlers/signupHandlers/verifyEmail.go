@@ -14,7 +14,7 @@ func VerifyEmail(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "signup: verify email" {
+	if session.Get("state").(string) != "signup: verify email" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
@@ -42,7 +42,7 @@ func VerifyEmail(c *fiber.Ctx) error {
 
 	session.Delete("verificationToken")
 	session.Delete("verificationTokenExpires")
-	session.Set("step", "signup: register user")
+	session.Set("state", "signup: register user")
 
 	if save_err := session.Save(); save_err != nil {
 		panic(save_err)

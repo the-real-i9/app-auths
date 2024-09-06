@@ -1,16 +1,12 @@
 package main
 
 import (
-	"appauths/src/globalVars"
-	"appauths/src/helpers"
+	"appauths/src/initializers"
 	"appauths/src/routes"
 	"appauths/src/routes/authRoutes"
 	"log"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/gofiber/storage/postgres"
 	"github.com/joho/godotenv"
 )
 
@@ -19,22 +15,13 @@ func init() {
 		log.Fatalln(err)
 	}
 
-	if err := helpers.InitDBPool(); err != nil {
+	if err := initializers.InitDBPool(); err != nil {
 		log.Fatalln(err)
 	}
 
-	authStorage := postgres.New(postgres.Config{ConnectionURI: os.Getenv("PGDATABASE_URL"), Table: "ongoing_auth"})
-	appStorage := postgres.New(postgres.Config{ConnectionURI: os.Getenv("PGDATABASE_URL"), Table: "ongoing_process"})
+	initializers.InitSessionStores()
 
-	globalVars.AuthSessionStore = session.New(session.Config{
-		Storage:    authStorage,
-		CookiePath: "/api/auth",
-	})
-
-	globalVars.AppSessionStore = session.New(session.Config{
-		Storage:    appStorage,
-		CookiePath: "/api/app",
-	})
+	initializers.InitOauth2Config()
 }
 
 func main() {

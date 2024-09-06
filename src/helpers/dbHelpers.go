@@ -1,26 +1,15 @@
 package helpers
 
 import (
+	"appauths/src/globalVars"
 	"context"
 	"errors"
-	"os"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func InitDBPool() error {
-	pool, err := pgxpool.New(context.Background(), os.Getenv("PGDATABASE_URL"))
-	if err != nil {
-		return err
-	}
-	dbPool = pool
-
-	return nil
-}
-
 func QueryRowField[T any](sql string, params ...any) (*T, error) {
-	rows, _ := dbPool.Query(context.Background(), sql, params...)
+	rows, _ := globalVars.DBPool.Query(context.Background(), sql, params...)
 
 	res, err := pgx.CollectOneRow(rows, pgx.RowToAddrOf[T])
 	if err != nil {
@@ -31,7 +20,7 @@ func QueryRowField[T any](sql string, params ...any) (*T, error) {
 }
 
 func QueryRowsField[T any](sql string, params ...any) ([]*T, error) {
-	rows, _ := dbPool.Query(context.Background(), sql, params...)
+	rows, _ := globalVars.DBPool.Query(context.Background(), sql, params...)
 
 	res, err := pgx.CollectRows(rows, pgx.RowToAddrOf[T])
 	if err != nil {
@@ -45,7 +34,7 @@ func QueryRowsField[T any](sql string, params ...any) ([]*T, error) {
 }
 
 func QueryRowType[T any](sql string, params ...any) (*T, error) {
-	rows, _ := dbPool.Query(context.Background(), sql, params...)
+	rows, _ := globalVars.DBPool.Query(context.Background(), sql, params...)
 
 	res, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByNameLax[T])
 	if err != nil {
@@ -59,7 +48,7 @@ func QueryRowType[T any](sql string, params ...any) (*T, error) {
 }
 
 func QueryRowsType[T any](sql string, params ...any) ([]*T, error) {
-	rows, _ := dbPool.Query(context.Background(), sql, params...)
+	rows, _ := globalVars.DBPool.Query(context.Background(), sql, params...)
 
 	res, err := pgx.CollectRows(rows, pgx.RowToAddrOfStructByNameLax[T])
 	if err != nil {
@@ -91,7 +80,7 @@ func BatchQuery[T any](sqls []string, params [][]any) ([]*T, error) {
 		})
 	}
 
-	s_err := dbPool.SendBatch(context.Background(), batch).Close()
+	s_err := globalVars.DBPool.SendBatch(context.Background(), batch).Close()
 
 	return res, s_err
 }

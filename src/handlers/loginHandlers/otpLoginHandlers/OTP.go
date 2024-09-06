@@ -20,7 +20,7 @@ func SendOTP(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "login: 2FA with OTP" {
+	if session.Get("state").(string) != "login: 2FA with OTP" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
@@ -31,7 +31,7 @@ func SendOTP(c *fiber.Ctx) error {
 	go helpers.SendMail(email, "2FA Login OTP", fmt.Sprintf("Your Login OTP (One-Time Password) is %d", otp))
 
 	session.Set("loginOTP", otp)
-	session.Set("step", "otp_login: verify otp")
+	session.Set("state", "otp_login: verify otp")
 
 	if save_err := session.Save(); save_err != nil {
 		panic(save_err)
@@ -46,7 +46,7 @@ func VerifyOTP(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "otp_login: verify otp" {
+	if session.Get("state").(string) != "otp_login: verify otp" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 

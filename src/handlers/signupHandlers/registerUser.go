@@ -15,7 +15,7 @@ func RegisterUser(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "signup: register user" {
+	if session.Get("state").(string) != "signup: register user" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 

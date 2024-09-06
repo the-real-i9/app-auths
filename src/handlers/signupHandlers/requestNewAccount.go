@@ -46,7 +46,7 @@ func RequestNewAccount(c *fiber.Ctx) error {
 	session.Set("email", body.Email)
 	session.Set("verificationToken", verfToken)
 	session.Set("verificationTokenExpires", verfTokenExpires)
-	session.Set("step", "signup: verify email")
+	session.Set("state", "signup: verify email")
 
 	if save_err := session.Save(); save_err != nil {
 		panic(save_err)

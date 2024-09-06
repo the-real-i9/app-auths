@@ -1,19 +1,18 @@
 package authRoutes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"appauths/src/handlers/oauthHandlers"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func GoogleOAuth(router fiber.Router) {
-	// generate and authorization URL
-	router.Get("/auth_url", nil)
+	router.Get("/auth_url", oauthHandlers.GoogleAuthURL)
 
-	// exchange authorization code for tokens (access_token & refresh_token)
-	// save both tokens (hashed) in the database
-	router.Get("/callback", nil)
-
-	// when needed, use refresh_token to get a new access_token
-	router.Post("/refresh_token", nil)
+	router.Get("/callback", oauthHandlers.GoogleAuthCallback)
 
 	// use access token to request for user profile info
+	// if access token has expired, use refresh_token to get a new access_token
 	router.Get("/", nil)
 }
 

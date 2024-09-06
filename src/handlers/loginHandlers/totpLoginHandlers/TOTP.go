@@ -19,7 +19,7 @@ func ValidatePasscode(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "login: 2FA with TOTP" {
+	if session.Get("state").(string) != "login: 2FA with TOTP" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 

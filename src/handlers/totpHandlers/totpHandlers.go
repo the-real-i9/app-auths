@@ -57,7 +57,7 @@ func BarcodeSetupKey(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	session.Set("step", "totp auth setup: validate passcode")
+	session.Set("state", "totp auth setup: validate passcode")
 	session.Set("accName", body.Username)
 	session.Set("setupKey", setupKey)
 	session.SetExpiry(30 * time.Minute)
@@ -78,7 +78,7 @@ func ValidateSetupPasscode(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	if session.Get("step").(string) != "totp auth setup: validate passcode" {
+	if session.Get("state").(string) != "totp auth setup: validate passcode" {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
