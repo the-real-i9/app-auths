@@ -10,10 +10,6 @@ func GoogleOAuth(router fiber.Router) {
 	router.Get("/auth_url", oauthHandlers.GoogleAuthURL)
 
 	router.Get("/callback", oauthHandlers.GoogleAuthCallback)
-
-	// use access token to request for user profile info
-	// if access token has expired, use refresh_token to get a new access_token
-	router.Get("/", nil)
 }
 
 func GithubOAuth(router fiber.Router) {
