@@ -2,7 +2,7 @@ package main
 
 import (
 	"appauths/src/initializers"
-	"appauths/src/routes"
+	"appauths/src/routes/appRoutes"
 	"appauths/src/routes/authRoutes"
 	"log"
 
@@ -33,7 +33,7 @@ func main() {
 
 	app.Route("/api/auth/oauth", authRoutes.OAuth)
 
-	app.Route("/api/app", routes.App)
+	app.Route("/api/app", appRoutes.App)
 
 	app.Listen(":5000")
 }
