@@ -19,7 +19,7 @@ func generateBarcodeAndSetupKey(accName string) (barcodeImageURL, setupKey strin
 	key, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      "Appauths",
 		AccountName: accName,
-		SecretSize:  8,
+		SecretSize:  10,
 	})
 	if err != nil {
 		panic(err)
