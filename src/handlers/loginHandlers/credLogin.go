@@ -41,7 +41,7 @@ func CredLogin(c *fiber.Ctx) error {
 	hashedPwd := (*userData)["password"].(string)
 
 	if cmp_err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(body.Password)); cmp_err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("incorrect username or password")
+		return c.Status(fiber.StatusUnauthorized).SendString("incorrect username or password")
 	}
 
 	var user appTypes.User
@@ -61,7 +61,6 @@ func CredLogin(c *fiber.Ctx) error {
 	}
 
 	// 2FA is enabled for the user
-
 	session, err := globalVars.AuthSessionStore.Get(c)
 	if err != nil {
 		panic(err)
@@ -71,9 +70,10 @@ func CredLogin(c *fiber.Ctx) error {
 	// session.Set("state", "login: 2FA with Email OTP")
 	mfaType := (*userData)["mfa_type"].(string)
 
-	if mfaType == "totp" {
+	switch mfaType {
+	case "totp":
 		session.Set("state", "login: 2FA with TOTP")
-	} else {
+	case "otp":
 		otp := rand.Intn(899999) + 100000
 
 		// send OTP
@@ -81,6 +81,7 @@ func CredLogin(c *fiber.Ctx) error {
 
 		session.Set("state", "login: 2FA with OTP")
 		session.Set("2faOTP", otp)
+	default:
 	}
 
 	session.Set("email", user.Email)
