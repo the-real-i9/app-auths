@@ -1,6 +1,7 @@
 package totpHandlers
 
 import (
+	"appauths/src/appTypes"
 	"appauths/src/globalVars"
 	"appauths/src/helpers"
 	"bytes"
@@ -11,15 +12,13 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 )
 
 func generateBarcodeAndSetupKey(accName string) (barcodeImageURL, setupKey string) {
 	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      "i9appauths",
+		Issuer:      "Appauths",
 		AccountName: accName,
-		Algorithm:   otp.AlgorithmSHA256,
 		SecretSize:  8,
 	})
 	if err != nil {
@@ -42,23 +41,17 @@ func generateBarcodeAndSetupKey(accName string) (barcodeImageURL, setupKey strin
 
 func BarcodeSetupKey(c *fiber.Ctx) error {
 
-	var body struct {
-		Username string `json:"username"`
-	}
+	username := c.Locals("user").(*appTypes.User).Username
 
-	if err := c.BodyParser(&body); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
-	}
+	barcodeImageURL, setupKey := generateBarcodeAndSetupKey(username)
 
-	barcodeImageURL, setupKey := generateBarcodeAndSetupKey(body.Username)
-
-	session, err := globalVars.AuthSessionStore.Get(c)
+	session, err := globalVars.AppSessionStore.Get(c)
 	if err != nil {
 		panic(err)
 	}
 
 	session.Set("state", "totp auth setup: validate passcode")
-	session.Set("accName", body.Username)
+	session.Set("accName", username)
 	session.Set("setupKey", setupKey)
 	session.SetExpiry(30 * time.Minute)
 
@@ -93,7 +86,7 @@ func ValidateSetupPasscode(c *fiber.Ctx) error {
 	setupKey := session.Get("setupKey").(string)
 
 	if valid := totp.Validate(body.Passcode, setupKey); !valid {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString("totp setup fail: passcode or setup key incorrect")
+		return c.Status(fiber.StatusUnauthorized).SendString("totp setup fail: passcode or setup key incorrect")
 	}
 
 	username := session.Get("accName").(string)

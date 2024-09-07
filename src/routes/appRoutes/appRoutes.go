@@ -13,12 +13,13 @@ import (
 
 func App(router fiber.Router) {
 	router.Use(func(c *fiber.Ctx) error {
-		authToken := c.GetReqHeaders()["Authorization"][0]
-		if authToken == "" {
+		authHeader := c.GetReqHeaders()["Authorization"]
+
+		if len(authHeader) == 0 {
 			return c.Status(fiber.StatusUnauthorized).SendString("authorization required")
 		}
 
-		authToken = strings.Fields(authToken)[1]
+		authToken := strings.Fields(authHeader[0])[1]
 
 		user, err := helpers.JwtVerify[appTypes.User](authToken, os.Getenv("AUTH_JWT_SECRET"))
 		if err != nil {
@@ -37,7 +38,7 @@ func App(router fiber.Router) {
 		return c.JSON(user)
 	})
 
-	router.Post("/totp_2fa/setup/barcode_setupkey", totpHandlers.BarcodeSetupKey)
+	router.Get("/totp_2fa/setup/barcode_setupkey", totpHandlers.BarcodeSetupKey)
 	router.Post("/totp_2fa/setup/validate_passcode", totpHandlers.ValidateSetupPasscode)
 
 	router.Put("/otp_2fa/enable", otpHandlers.EnableOTP2FA)

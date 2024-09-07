@@ -40,7 +40,7 @@ func JwtVerify[T any](tokenString, secret string) (*T, error) {
 
 	var data T
 
-	ToData(token.Claims.(jwt.MapClaims)["data"].(T), &data)
+	ToData(token.Claims.(jwt.MapClaims)["data"], &data)
 
 	return &data, nil
 }
