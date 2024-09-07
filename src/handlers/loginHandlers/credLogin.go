@@ -4,6 +4,8 @@ import (
 	"appauths/src/appTypes"
 	"appauths/src/globalVars"
 	"appauths/src/helpers"
+	"fmt"
+	"math/rand"
 	"os"
 	"time"
 
@@ -47,7 +49,6 @@ func CredLogin(c *fiber.Ctx) error {
 	helpers.MapToStruct(*userData, &user)
 
 	mfaEnabled := (*userData)["mfa_enabled"].(bool)
-	mfaType := (*userData)["mfa_type"].(string)
 
 	if !mfaEnabled {
 		jwt := helpers.JwtSign(user, os.Getenv("AUTH_JWT_SECRET"), time.Now().Add(24*time.Hour))
@@ -68,10 +69,18 @@ func CredLogin(c *fiber.Ctx) error {
 
 	// set "state" key to either "login: 2FA with TOTP" or "login: 2FA with Email OTP", whichever you choose
 	// session.Set("state", "login: 2FA with Email OTP")
+	mfaType := (*userData)["mfa_type"].(string)
+
 	if mfaType == "totp" {
 		session.Set("state", "login: 2FA with TOTP")
 	} else {
+		otp := rand.Intn(899999) + 100000
+
+		// send OTP
+		go helpers.SendMail(user.Email, "2FA Login OTP", fmt.Sprintf("Your Login OTP (One-Time Password) is %d", otp))
+
 		session.Set("state", "login: 2FA with OTP")
+		session.Set("2faOTP", otp)
 	}
 
 	session.Set("email", user.Email)

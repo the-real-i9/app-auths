@@ -10,8 +10,7 @@ import (
 
 // Multi-factor authentication
 func MFALogin(router fiber.Router) {
-	router.Get("/otp_2fa/send_otp", otpLoginHandlers.SendOTP)
-	router.Post("/otp_2fa/verify", otpLoginHandlers.VerifyOTP)
+	router.Post("/otp_2fa/validate_otp", otpLoginHandlers.ValidateOTP)
 
 	router.Post("/totp_2fa/validate_passcode", totpLoginHandlers.ValidatePasscode)
 }
