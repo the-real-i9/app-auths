@@ -1,12 +1,14 @@
 package oauthHandlers
 
 import (
+	"appauths/src/appTypes"
 	"appauths/src/globalVars"
 	"appauths/src/helpers"
 	"context"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -64,17 +66,20 @@ func GithubAuthCallback(c *fiber.Ctx) error {
 
 	// token.Accesstoken to make request
 	agent := fiber.Get("https://api.github.com/user").Set("Authorization", "Bearer "+token.AccessToken)
-	_, data, errs := agent.Bytes()
+
+	var githubUser struct {
+		Email    string `json:"email"`
+		Username string `json:"login"`
+	}
+
+	_, _, errs := agent.Struct(&githubUser)
 	if len(errs) > 0 {
 		log.Println(errs)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	return c.JSON(string(data))
-
-	/* userEmail := ""
 	// check if the user already has an account,
-	user, err := helpers.QueryRowType[appTypes.User]("SELECT user_id, email, username FROM auth_user WHERE email = $1", userEmail)
+	user, err := helpers.QueryRowType[appTypes.User]("SELECT user_id, email, username FROM auth_user WHERE email = $1", githubUser.Email)
 	if err != nil {
 		log.Println(err)
 		c.SendStatus(fiber.StatusInternalServerError)
@@ -90,11 +95,23 @@ func GithubAuthCallback(c *fiber.Ctx) error {
 		})
 	}
 
-	// if no, sign up the user using the portion before the @ on the user's email
-	// (invalid characters replaced with "_") (user can change it later)
+	// if no, add a new user
+	var tempUsername string
 	strRep := strings.NewReplacer(".", "_", "-", "_")
-	tempUsername := strRep.Replace(strings.Split(userEmail, "@")[0])
-	newUser, err := helpers.QueryRowType[appTypes.User]("INSERT INTO auth_user (email, username) VALUES ($1, $2) RETURNING user_id, email, username", userEmail, tempUsername)
+
+	usernameUsed, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM auth_user WHERE username = $1)", githubUser.Username)
+	if err != nil {
+		log.Println(err)
+		c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	if !(*usernameUsed) {
+		tempUsername = strRep.Replace(githubUser.Username)
+	} else {
+		tempUsername = strRep.Replace(strings.Split(githubUser.Email, "@")[0])
+	}
+
+	newUser, err := helpers.QueryRowType[appTypes.User]("INSERT INTO auth_user (email, username) VALUES ($1, $2) RETURNING user_id, email, username", githubUser.Email, tempUsername)
 	if err != nil {
 		log.Println(err)
 		c.SendStatus(fiber.StatusInternalServerError)
@@ -110,5 +127,5 @@ func GithubAuthCallback(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"msg":     "Login success!",
 		"authJwt": jwt,
-	}) */
+	})
 }
