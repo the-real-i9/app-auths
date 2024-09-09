@@ -13,8 +13,8 @@ func GoogleOAuth(router fiber.Router) {
 }
 
 func GithubOAuth(router fiber.Router) {
-	router.Get("/auth_url", nil)
-	router.Get("/callback", nil)
+	router.Get("/auth_url", oauthHandlers.GithubAuthURL)
+	router.Get("/callback", oauthHandlers.GithubAuthCallback)
 }
 
 func OAuth(router fiber.Router) {

@@ -5,6 +5,7 @@ import (
 	"appauths/src/globalVars"
 	"appauths/src/helpers"
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -15,6 +16,28 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/people/v1"
 )
+
+func GoogleAuthURL(c *fiber.Ctx) error {
+	verifier := oauth2.GenerateVerifier()
+
+	state := helpers.JwtSign("oauth: google callback", os.Getenv("SESSION_JWT_SECRET"), time.Now().Add(24*time.Hour))
+
+	url := globalVars.GoogleOauth2Config.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
+
+	session, err := globalVars.AuthSessionStore.Get(c)
+	if err != nil {
+		panic(err)
+	}
+
+	session.Set("state", "oauth: google callback")
+	session.Set("verifier", verifier)
+
+	if err := session.Save(); err != nil {
+		panic(err)
+	}
+
+	return c.SendString(fmt.Sprintf("Visit the URL for the auth dialog: %v", url))
+}
 
 func GoogleAuthCallback(c *fiber.Ctx) error {
 	ctx := context.Background()
@@ -38,12 +61,12 @@ func GoogleAuthCallback(c *fiber.Ctx) error {
 
 	verifier := session.Get("verifier").(string)
 
-	token, err := globalVars.Oauth2Config.Exchange(ctx, authCode, oauth2.VerifierOption(verifier))
+	token, err := globalVars.GoogleOauth2Config.Exchange(ctx, authCode, oauth2.VerifierOption(verifier))
 	if err != nil {
 		panic(err)
 	}
 
-	service, err := people.NewService(ctx, option.WithTokenSource(globalVars.Oauth2Config.TokenSource(ctx, token)))
+	service, err := people.NewService(ctx, option.WithTokenSource(globalVars.GoogleOauth2Config.TokenSource(ctx, token)))
 	if err != nil {
 		panic(err)
 	}
