@@ -9,18 +9,24 @@ import (
 	"github.com/gofiber/storage/postgres"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/endpoints"
 )
 
 func InitOauth2Config() {
-	globalVars.Oauth2Config = &oauth2.Config{
+	globalVars.GoogleOauth2Config = &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile", "openid"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
-			TokenURL: "https://oauth2.googleapis.com/token",
-		},
-		RedirectURL: "http://127.0.0.1:5000/api/auth/oauth/google/callback",
+		Endpoint:     endpoints.Google,
+		RedirectURL:  "http://127.0.0.1:5000/api/auth/oauth/google/callback",
+	}
+
+	globalVars.GithubOauth2Config = &oauth2.Config{
+		ClientID:     os.Getenv("GITHUB_OAUTH_CLIENT_ID"),
+		ClientSecret: os.Getenv("GITHUB_OAUTH_CLIENT_SECRET"),
+		Scopes:       []string{"user:email"},
+		Endpoint:     endpoints.GitHub,
+		RedirectURL:  "http://127.0.0.1:5000/api/auth/oauth/github/callback",
 	}
 }
 

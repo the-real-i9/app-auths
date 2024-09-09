@@ -12,7 +12,9 @@ var AuthSessionStore *session.Store
 
 var AppSessionStore *session.Store
 
-var Oauth2Config *oauth2.Config
+var GoogleOauth2Config *oauth2.Config
+
+var GithubOauth2Config *oauth2.Config
 
 var ErrInternalServerError = errors.New("internal server error: check logger")
 
