@@ -1,10 +1,10 @@
 package appRoutes
 
 import (
-	"appauths/src/appTypes"
-	"appauths/src/handlers/otpHandlers"
-	"appauths/src/handlers/totpHandlers"
-	"appauths/src/helpers"
+	"appauths/appTypes"
+	"appauths/handlers/otpHandlers"
+	"appauths/handlers/totpHandlers"
+	"appauths/helpers"
 	"os"
 	"strings"
 

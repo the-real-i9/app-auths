@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"appauths/src/globalVars"
+	"appauths/globalVars"
 	"context"
 	"errors"
 

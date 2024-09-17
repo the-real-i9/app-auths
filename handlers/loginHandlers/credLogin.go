@@ -1,9 +1,9 @@
 package loginHandlers
 
 import (
-	"appauths/src/appTypes"
-	"appauths/src/globalVars"
-	"appauths/src/helpers"
+	"appauths/appTypes"
+	"appauths/globalVars"
+	"appauths/helpers"
 	"fmt"
 	"math/rand"
 	"os"

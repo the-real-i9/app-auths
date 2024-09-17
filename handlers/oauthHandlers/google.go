@@ -1,9 +1,9 @@
 package oauthHandlers
 
 import (
-	"appauths/src/appTypes"
-	"appauths/src/globalVars"
-	"appauths/src/helpers"
+	"appauths/appTypes"
+	"appauths/globalVars"
+	"appauths/helpers"
 	"context"
 	"fmt"
 	"log"
@@ -13,21 +13,23 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/oauth2"
+	"google.golang.org/api/option"
+	"google.golang.org/api/people/v1"
 )
 
-func GithubAuthURL(c *fiber.Ctx) error {
+func GoogleAuthURL(c *fiber.Ctx) error {
 	verifier := oauth2.GenerateVerifier()
 
-	state := helpers.JwtSign("oauth: github callback", os.Getenv("SESSION_JWT_SECRET"), time.Now().Add(24*time.Hour))
+	state := helpers.JwtSign("oauth: google callback", os.Getenv("SESSION_JWT_SECRET"), time.Now().Add(24*time.Hour))
 
-	url := globalVars.GithubOauth2Config.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
+	url := globalVars.GoogleOauth2Config.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
 
 	session, err := globalVars.AuthSessionStore.Get(c)
 	if err != nil {
 		panic(err)
 	}
 
-	session.Set("state", "oauth: github callback")
+	session.Set("state", "oauth: google callback")
 	session.Set("verifier", verifier)
 
 	if err := session.Save(); err != nil {
@@ -37,7 +39,7 @@ func GithubAuthURL(c *fiber.Ctx) error {
 	return c.SendString(fmt.Sprintf("Visit the URL for the auth dialog: %v", url))
 }
 
-func GithubAuthCallback(c *fiber.Ctx) error {
+func GoogleAuthCallback(c *fiber.Ctx) error {
 	ctx := context.Background()
 
 	session, err := globalVars.AuthSessionStore.Get(c)
@@ -59,27 +61,24 @@ func GithubAuthCallback(c *fiber.Ctx) error {
 
 	verifier := session.Get("verifier").(string)
 
-	token, err := globalVars.GithubOauth2Config.Exchange(ctx, authCode, oauth2.VerifierOption(verifier))
+	token, err := globalVars.GoogleOauth2Config.Exchange(ctx, authCode, oauth2.VerifierOption(verifier))
 	if err != nil {
 		panic(err)
 	}
 
-	// token.Accesstoken to make request
-	agent := fiber.Get("https://api.github.com/user").Set("Authorization", "Bearer "+token.AccessToken)
-
-	var githubUser struct {
-		Email    string `json:"email"`
-		Username string `json:"login"`
+	service, err := people.NewService(ctx, option.WithTokenSource(globalVars.GoogleOauth2Config.TokenSource(ctx, token)))
+	if err != nil {
+		panic(err)
 	}
 
-	_, _, errs := agent.Struct(&githubUser)
-	if len(errs) > 0 {
-		log.Println(errs)
-		return c.SendStatus(fiber.StatusInternalServerError)
+	person, err := service.People.Get("people/me").PersonFields("emailAddresses").Do()
+	if err != nil {
+		panic(err)
 	}
 
+	userEmail := person.EmailAddresses[0].Value
 	// check if the user already has an account,
-	user, err := helpers.QueryRowType[appTypes.User]("SELECT user_id, email, username FROM auth_user WHERE email = $1", githubUser.Email)
+	user, err := helpers.QueryRowType[appTypes.User]("SELECT user_id, email, username FROM auth_user WHERE email = $1", userEmail)
 	if err != nil {
 		log.Println(err)
 		c.SendStatus(fiber.StatusInternalServerError)
@@ -95,23 +94,11 @@ func GithubAuthCallback(c *fiber.Ctx) error {
 		})
 	}
 
-	// if no, add a new user
-	var tempUsername string
+	// if no, sign up the user using the portion before the @ on the user's email
+	// (invalid characters replaced with "_") (user can change it later)
 	strRep := strings.NewReplacer(".", "_", "-", "_")
-
-	usernameUsed, err := helpers.QueryRowField[bool]("SELECT EXISTS(SELECT 1 FROM auth_user WHERE username = $1)", githubUser.Username)
-	if err != nil {
-		log.Println(err)
-		c.SendStatus(fiber.StatusInternalServerError)
-	}
-
-	if !(*usernameUsed) {
-		tempUsername = strRep.Replace(githubUser.Username)
-	} else {
-		tempUsername = strRep.Replace(strings.Split(githubUser.Email, "@")[0])
-	}
-
-	newUser, err := helpers.QueryRowType[appTypes.User]("INSERT INTO auth_user (email, username) VALUES ($1, $2) RETURNING user_id, email, username", githubUser.Email, tempUsername)
+	tempUsername := strRep.Replace(strings.Split(userEmail, "@")[0])
+	newUser, err := helpers.QueryRowType[appTypes.User]("INSERT INTO auth_user (email, username) VALUES ($1, $2) RETURNING user_id, email, username", userEmail, tempUsername)
 	if err != nil {
 		log.Println(err)
 		c.SendStatus(fiber.StatusInternalServerError)

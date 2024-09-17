@@ -1,9 +1,9 @@
 package main
 
 import (
-	"appauths/src/initializers"
-	"appauths/src/routes/appRoutes"
-	"appauths/src/routes/authRoutes"
+	"appauths/initializers"
+	"appauths/routes/appRoutes"
+	"appauths/routes/authRoutes"
 	"log"
 
 	"github.com/gofiber/fiber/v2"

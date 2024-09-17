@@ -1,7 +1,7 @@
 package initializers
 
 import (
-	"appauths/src/globalVars"
+	"appauths/globalVars"
 	"context"
 	"os"
 

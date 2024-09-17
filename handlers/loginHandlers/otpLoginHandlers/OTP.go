@@ -1,9 +1,9 @@
 package otpLoginHandlers
 
 import (
-	"appauths/src/appTypes"
-	"appauths/src/globalVars"
-	"appauths/src/helpers"
+	"appauths/appTypes"
+	"appauths/globalVars"
+	"appauths/helpers"
 	"log"
 	"os"
 	"time"

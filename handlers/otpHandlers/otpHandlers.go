@@ -1,7 +1,7 @@
 package otpHandlers
 
 import (
-	"appauths/src/helpers"
+	"appauths/helpers"
 	"log"
 
 	"github.com/gofiber/fiber/v2"

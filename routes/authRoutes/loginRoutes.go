@@ -1,9 +1,9 @@
 package authRoutes
 
 import (
-	"appauths/src/handlers/loginHandlers"
-	"appauths/src/handlers/loginHandlers/otpLoginHandlers"
-	"appauths/src/handlers/loginHandlers/totpLoginHandlers"
+	"appauths/handlers/loginHandlers"
+	"appauths/handlers/loginHandlers/otpLoginHandlers"
+	"appauths/handlers/loginHandlers/totpLoginHandlers"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -1,9 +1,9 @@
 package totpHandlers
 
 import (
-	"appauths/src/appTypes"
-	"appauths/src/globalVars"
-	"appauths/src/helpers"
+	"appauths/appTypes"
+	"appauths/globalVars"
+	"appauths/helpers"
 	"bytes"
 	"encoding/base64"
 	"fmt"
